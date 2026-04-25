@@ -1,0 +1,61 @@
+﻿@model ConfeitariaApp.Models.Bolo
+
+@{
+    ViewData["Title"] = "Excluir Bolo";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3>🗑️ Excluir Bolo</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Atenção!</strong> Tem certeza que deseja excluir este bolo?
+                        <br />
+                        <small>Esta ação não pode ser desfeita.</small>
+                    </div>
+
+                    <dl class="row">
+                        <dt class="col-sm-4">ID</dt>
+                        <dd class="col-sm-8">@Model.Id</dd>
+
+                        <dt class="col-sm-4">Nome</dt>
+                        <dd class="col-sm-8">@Model.Nome</dd>
+
+                        <dt class="col-sm-4">Descrição</dt>
+                        <dd class="col-sm-8">@Model.Descricao</dd>
+
+                        <dt class="col-sm-4">Receita</dt>
+                        <dd class="col-sm-8">@(Model.Receita?.Nome ?? "N/A")</dd>
+
+                        <dt class="col-sm-4">Fator</dt>
+                        <dd class="col-sm-8">@Model.FatorMultiplicador.ToString("F2")</dd>
+
+                        <dt class="col-sm-4">Custo</dt>
+                        <dd class="col-sm-8">R$ @Model.CustoIngredientes.ToString("F2")</dd>
+
+                        <dt class="col-sm-4">Preço Final</dt>
+                        <dd class="col-sm-8">R$ @Model.PrecoFinal.ToString("F2")</dd>
+
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8">@Model.Status</dd>
+
+                        <dt class="col-sm-4">Data Cadastro</dt>
+                        <dd class="col-sm-8">@Model.DataCadastro.ToString("dd/MM/yyyy HH:mm")</dd>
+                    </dl>
+
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">✅ Confirmar Exclusão</button>
+                            <a asp-action="Index" class="btn btn-secondary">↩️ Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

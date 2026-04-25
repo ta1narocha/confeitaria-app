@@ -1,0 +1,169 @@
+﻿@model List<ConfeitariaApp.Models.Receita>
+@{
+    ViewData["Title"] = "Receitas";
+}
+
+<style>
+    .btn-confeitaria {
+        background-color: #ff85a1;
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-confeitaria:hover {
+            background-color: #e06b86;
+            color: white;
+            transform: scale(1.02);
+        }
+
+    .btn-outline-confeitaria {
+        background-color: transparent;
+        color: #ff85a1;
+        border: 1px solid #ff85a1;
+        transition: all 0.3s ease;
+    }
+
+        .btn-outline-confeitaria:hover {
+            background-color: #ff85a1;
+            color: white;
+        }
+
+    .card-receita {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+        .card-receita:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+    .badge-ingrediente {
+        background-color: #ffe0e0;
+        color: #5d4037;
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 20px;
+    }
+
+    .custo-total {
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+    .header-receita {
+        background: linear-gradient(135deg, #ff85a1 0%, #e06b86 100%);
+        color: white;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold" style="color: #5d4037;">📋 Receitas Cadastradas</h1>
+            <p class="text-muted">Gerencie suas receitas e calcule os custos automaticamente</p>
+        </div>
+        <a asp-action="Create" class="btn btn-confeitaria btn-lg">
+            ➕ Nova Receita
+        </a>
+    </div>
+
+    @if (TempData["Mensagem"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-4" role="alert" style="background-color: #d4edda; border-color: #28a745;">
+            @TempData["Mensagem"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert text-center rounded-4 p-5" style="background-color: #ffe0e0; border: 2px dashed #ff85a1;">
+            <h4 style="color: #5d4037;">🍰 Nenhuma receita cadastrada</h4>
+            <p class="text-muted">Clique em "Nova Receita" para começar a criar suas receitas!</p>
+            <a asp-action="Create" class="btn btn-confeitaria mt-2">➕ Criar Primeira Receita</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var receita in Model)
+            {
+                var custoTotal = receita.CalcularCustoTotal();
+
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card card-receita h-100 shadow-sm border-0">
+                        <div class="card-header header-receita border-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 fw-bold">🍰 @receita.Nome</h5>
+                                <span class="badge bg-light text-dark">@(receita.Itens?.Count ?? 0) itens</span>
+                            </div>
+                        </div>
+                        <div class="card-body" style="background-color: #fffafc;">
+                            <p class="card-text" style="color: #5d4037;">
+                                <strong>Descrição:</strong><br />
+                                @(receita.Descricao?.Length > 80 ? receita.Descricao.Substring(0, 80) + "..." : receita.Descricao)
+                            </p>
+                            <p class="mb-2"><strong>Rendimento:</strong> @receita.Rendimento</p>
+                            <hr style="border-color: #ffe0e0;" />
+
+                            @if (receita.Itens != null && receita.Itens.Any())
+                            {
+                                <div class="mb-2">
+                                    <strong>🥄 Ingredientes:</strong>
+                                    <div class="mt-2">
+                                        @foreach (var item in receita.Itens.Take(3))
+                                        {
+                                            <span class="badge-ingrediente d-inline-block me-1 mb-1">
+                                                @item.Ingrediente?.Nome: @item.Quantidade @item.Ingrediente?.UnidadeBase
+                                            </span>
+                                        }
+                                        @if (receita.Itens.Count > 3)
+                                        {
+                                            <span class="badge-ingrediente">
+                                                +@(receita.Itens.Count - 3) outros
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning py-2" style="background-color: #fff3cd; color: #856404;">
+                                    ⚠️ Nenhum ingrediente adicionado
+                                </div>
+                            }
+                        </div>
+                        <div class="card-footer bg-transparent border-0 pb-3" style="background-color: #fffafc;">
+                            <div class="text-center mb-3">
+                                <h6 class="mb-0 text-muted">Custo Total da Receita</h6>
+                                <h4 class="custo-total mb-0">R$ @custoTotal.ToString("F2")</h4>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a asp-action="Details" asp-route-id="@receita.Id" class="btn btn-outline-confeitaria btn-sm flex-grow-1">
+                                    👁️ Ver
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@receita.Id" class="btn btn-warning btn-sm flex-grow-1" style="background-color: #ffc107; border-color: #ffc107;">
+                                    ✏️ Editar
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@receita.Id" class="btn btn-danger btn-sm flex-grow-1">
+                                    🗑️ Excluir
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+       
+        <div class="alert rounded-4 mt-4 text-center" style="background-color: #ffe0e0;">
+            <strong style="color: #5d4037;">📊 Resumo:</strong>
+            <span style="color: #5d4037;">Total de receitas: @Model.Count</span>
+            <span class="mx-3">|</span>
+            <span style="color: #5d4037;">Média de custo: R$ @Model.Average(r => r.CalcularCustoTotal()).ToString("F2")</span>
+        </div>
+    }
+</div>

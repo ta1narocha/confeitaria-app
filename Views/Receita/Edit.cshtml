@@ -1,0 +1,117 @@
+﻿@model ConfeitariaApp.Models.Receita
+
+@{
+    ViewData["Title"] = "Editar Receita";
+}
+
+<style>
+    .btn-confeitaria {
+        background-color: #ff85a1;
+        color: white;
+        border: none;
+    }
+
+        .btn-confeitaria:hover {
+            background-color: #e06b86;
+            color: white;
+        }
+</style>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header" style="background-color: #ff85a1; color: white;">
+                    <h3 class="mb-0">✏️ Editar Receita</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Nome" class="form-label fw-bold" style="color: #5d4037;">Nome da Receita</label>
+                            <input asp-for="Nome" class="form-control" />
+                            <span asp-validation-for="Nome" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Descricao" class="form-label fw-bold" style="color: #5d4037;">Descrição</label>
+                            <textarea asp-for="Descricao" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Descricao" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Rendimento" class="form-label fw-bold" style="color: #5d4037;">Rendimento</label>
+                            <input asp-for="Rendimento" class="form-control" />
+                            <span asp-validation-for="Rendimento" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-confeitaria">💾 Salvar Alterações</button>
+                            <a asp-action="Index" class="btn btn-secondary">↩️ Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header" style="background-color: #ff85a1; color: white;">
+                    <h4 class="mb-0">🥄 Ingredientes da Receita</h4>
+                </div>
+                <div class="card-body">
+                    @if (Model.Itens != null && Model.Itens.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Ingrediente</th>
+                                        <th>Quantidade</th>
+                                        <th>Custo</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Itens)
+                                    {
+                                        <tr>
+                                            <td>@item.Ingrediente?.Nome</td>
+                                            <td>@item.Quantidade @item.Ingrediente?.UnidadeBase</td>
+                                            <td>R$ @item.CustoItem.ToString("F2")</td>
+                                            <td>
+                                                <a asp-action="RemoverIngrediente" asp-route-id="@item.Id" class="btn btn-sm btn-danger">❌</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot class="table-success">
+                                    <tr>
+                                        <td colspan="2"><strong>Total:</strong></td>
+                                        <td colspan="2"><strong>R$ @Model.CustoTotal.ToString("F2")</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">Nenhum ingrediente adicionado.</p>
+                    }
+                    <a asp-action="AdicionarIngrediente" asp-route-id="@Model.Id" class="btn btn-confeitaria w-100">
+                        ➕ Adicionar Ingrediente
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

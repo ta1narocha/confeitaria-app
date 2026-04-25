@@ -1,0 +1,129 @@
+﻿@model ConfeitariaApp.Models.Ingrediente
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white border-0 pt-4 text-center">
+                    <h2 class="fw-bold" style="color: #ff85a1;">🧁 Novo Ingrediente</h2>
+                    <p class="text-muted">Configure as unidades para cálculos automáticos</p>
+                </div>
+
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger small"></div>
+
+                        
+                        <div class="mb-3">
+                            <label asp-for="Nome" class="form-label fw-bold">Nome do Ingrediente</label>
+                            <input asp-for="Nome" class="form-control rounded-pill shadow-sm" placeholder="Ex: Chocolate em Pó" />
+                            <span asp-validation-for="Nome" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3">
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="UnidadeBase" class="form-label fw-bold">Unidade de Medida</label>
+                                <select asp-for="UnidadeBase" class="form-select rounded-pill shadow-sm">
+                                    <option value="g">grama (g)</option>
+                                    <option value="ml">mililitro (ml)</option>
+                                    <option value="un">unidade (un)</option>
+                                </select>
+                                <span asp-validation-for="UnidadeBase" class="text-danger small"></span>
+                            </div>
+
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold d-block">Tipo de Embalagem</label>
+                                <div class="btn-group w-100 shadow-sm rounded-pill overflow-hidden" role="group">
+                                    <input type="radio" class="btn-check" asp-for="TipoUnidade" value="Peso" id="tipoPeso" checked>
+                                    <label class="btn btn-outline-secondary border-0" for="tipoPeso">Peso</label>
+
+                                    <input type="radio" class="btn-check" asp-for="TipoUnidade" value="Volume" id="tipoVol">
+                                    <label class="btn btn-outline-secondary border-0" for="tipoVol">Volume</label>
+
+                                    <input type="radio" class="btn-check" asp-for="TipoUnidade" value="Unidade" id="tipoUn">
+                                    <label class="btn btn-outline-secondary border-0" for="tipoUn">Un</label>
+                                </div>
+                            </div>
+
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="QuantidadeEmbalagem" class="form-label fw-bold">Qtd. na Embalagem</label>
+                                <div class="input-group shadow-sm rounded-pill overflow-hidden">
+                                    <input asp-for="QuantidadeEmbalagem" class="form-control border-0 px-3" type="number" step="0.001" />
+                                    <span class="input-group-text bg-light border-0 fw-bold" id="unidadeDisplay">g</span>
+                                </div>
+                                <span asp-validation-for="QuantidadeEmbalagem" class="text-danger small"></span>
+                            </div>
+
+                           
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PrecoEmbalagem" class="form-label fw-bold">Preço Pago (R$)</label>
+                                <div class="input-group shadow-sm rounded-pill overflow-hidden">
+                                    <span class="input-group-text bg-light border-0 px-3">R$</span>
+                                    <input asp-for="PrecoEmbalagem" class="form-control border-0" type="number" step="0.01" />
+                                </div>
+                                <span asp-validation-for="PrecoEmbalagem" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                       
+                        <div class="alert alert-info border-0 rounded-4 shadow-sm mt-3">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3 fs-3">💰</div>
+                                <div>
+                                    <strong>Preço por <span id="unidadeTexto">grama</span>:</strong><br />
+                                    <span class="fs-4 fw-bold text-primary">R$ <span id="precoUnitarioPreview">0,00</span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                       
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-confeitaria flex-grow-1 shadow-sm">
+                                <i class="bi bi-check-circle"></i> Cadastrar
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">Voltar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function calcularPrecoUnitario() {
+            var quantidade = parseFloat($('#QuantidadeEmbalagem').val()) || 0;
+            var preco = parseFloat($('#PrecoEmbalagem').val()) || 0;
+
+            if (quantidade > 0 && preco > 0) {
+                var precoUnitario = preco / quantidade;
+                $('#precoUnitarioPreview').text(precoUnitario.toLocaleString('pt-BR', { minimumFractionDigits: 4, maximumFractionDigits: 4 }));
+            } else {
+                $('#precoUnitarioPreview').text('0,0000');
+            }
+        }
+
+        $('#QuantidadeEmbalagem, #PrecoEmbalagem').on('input', calcularPrecoUnitario);
+
+        $('#UnidadeBase').on('change', function() {
+            var unidade = $(this).val();
+            var texto = "unidade";
+            if(unidade === "g") texto = "grama";
+            if(unidade === "ml") texto = "mililitro";
+
+            $('#unidadeDisplay').text(unidade);
+            $('#unidadeTexto').text(texto);
+            calcularPrecoUnitario();
+        });
+
+        calcularPrecoUnitario();
+    </script>
+}

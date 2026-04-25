@@ -1,0 +1,58 @@
+﻿@model List<ConfeitariaApp.Models.Ingrediente>
+
+
+<div class="container pb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-pink fw-bold">🧁 Lista de Ingredientes</h2>
+        <a asp-action="Create" class="btn btn-confeitaria shadow-sm">+ Novo Ingrediente</a>
+    </div>
+
+    <form asp-action="Index" method="get" class="mb-4">
+        <div class="input-group shadow-sm rounded-pill overflow-hidden">
+            <span class="input-group-text bg-white border-0 ps-3">
+                <i class="bi bi-search text-pink"></i> 
+            </span>
+            <input type="text" name="searchString" class="form-control border-0"
+                   placeholder="Pesquisar ingrediente..." value="@ViewData["CurrentFilter"]" />
+            <button type="submit" class="btn btn-confeitaria px-4">Buscar</button>
+        </div>
+    </form>
+
+    <div class="table-responsive shadow-sm rounded-4" style="max-height: 400px; overflow-y: auto;">
+        <table class="table table-hover bg-white mb-0">
+            <thead class="sticky-top bg-white">
+                <tr class="text-secondary">
+                    <th>Ingrediente</th>
+                    <th>Unidade</th>
+                    <th>Qtd. Embalagem</th>
+                    <th>Preço (R$)</th>
+                    <th>Preço Unitário</th>
+                    <th class="text-center">Alterações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="fw-bold">@item.Nome</td>
+                        <td>@item.UnidadeBase</td>
+                        <td>@item.QuantidadeEmbalagem</td>
+                        <td>@item.PrecoEmbalagem.ToString("N2")</td>
+                        <td class="text-center">
+                            <span class="badge rounded-pill bg-success-subtle text-success border border-success px-3 py-2">
+                                @((item.PrecoEmbalagem / (decimal)item.QuantidadeEmbalagem).ToString("C3")) / @item.UnidadeBase
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary rounded-pill me-2">Editar</a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger rounded-pill">Excluir</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

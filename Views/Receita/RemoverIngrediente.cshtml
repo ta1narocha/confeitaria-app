@@ -1,0 +1,54 @@
+﻿@model ConfeitariaApp.Models.ItemReceita
+
+@{
+    ViewData["Title"] = "Remover Ingrediente";
+}
+
+<style>
+    .btn-confeitaria {
+        background-color: #ff85a1;
+        color: white;
+        border: none;
+    }
+
+        .btn-confeitaria:hover {
+            background-color: #e06b86;
+            color: white;
+        }
+</style>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">❌ Remover Ingrediente</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Atenção!</strong> Tem certeza que deseja remover este ingrediente da receita?
+                    </div>
+
+                    <dl class="row">
+                        <dt class="col-sm-4">Receita</dt>
+                        <dd class="col-sm-8">@Model.Receita?.Nome</dd>
+
+                        <dt class="col-sm-4">Ingrediente</dt>
+                        <dd class="col-sm-8">@Model.Ingrediente?.Nome</dd>
+
+                        <dt class="col-sm-4">Quantidade</dt>
+                        <dd class="col-sm-8">@Model.Quantidade @Model.Ingrediente?.UnidadeBase</dd>
+                    </dl>
+
+                    <form asp-action="RemoverIngrediente" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">✅ Confirmar Remoção</button>
+                            <a asp-action="Edit" asp-route-id="@Model.ReceitaId" class="btn btn-secondary">↩️ Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

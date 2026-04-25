@@ -1,0 +1,131 @@
+﻿@model ConfeitariaApp.Models.Pedido
+
+@{
+    ViewData["Title"] = "Editar Pedido";
+    var bolos = ViewBag.Bolos as List<ConfeitariaApp.Models.Bolo>;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h3>✏️ Editar Pedido</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Cliente" class="form-label">Nome do Cliente</label>
+                            <input asp-for="Cliente" class="form-control" />
+                            <span asp-validation-for="Cliente" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="BoloId" class="form-label">Bolo</label>
+                            <select asp-for="BoloId" class="form-control" required>
+                                <option value="">Selecione um bolo</option>
+                                @if (bolos != null)
+                                {
+                                    foreach (var bolo in bolos)
+                                    {
+                                        <option value="@bolo.Id" selected="@(bolo.Id == Model.BoloId)">
+                                            @bolo.Nome - R$ @bolo.PrecoFinal.ToString("F2")
+                                        </option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="BoloId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DataEntrega" class="form-label">Data de Entrega</label>
+                            <input asp-for="DataEntrega" class="form-control" type="date" />
+                            <span asp-validation-for="DataEntrega" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Status" class="form-label">Status</label>
+                            <select asp-for="Status" class="form-control">
+                                <option value="Pendente">⏳ Pendente</option>
+                                <option value="Em produção">🔨 Em produção</option>
+                                <option value="Concluído">✅ Concluído</option>
+                                <option value="Cancelado">❌ Cancelado</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="FormaPagamento" class="form-label">Forma de Pagamento</label>
+                            <select asp-for="FormaPagamento" class="form-control">
+                                <option value="">Selecione</option>
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Pix">Pix</option>
+                                <option value="Cartão Crédito">Cartão Crédito</option>
+                                <option value="Cartão Débito">Cartão Débito</option>
+                                <option value="Transferência">Transferência</option>
+                            </select>
+                            <span asp-validation-for="FormaPagamento" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Observacoes" class="form-label">Observações</label>
+                            <textarea asp-for="Observacoes" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Observacoes" class="text-danger"></span>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <strong>📊 Informações:</strong><br />
+                            Data do Pedido: @Model.DataPedido.ToString("dd/MM/yyyy HH:mm")<br />
+                            Valor Atual: <strong>R$ @Model.Valor.ToString("F2")</strong>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">💾 Salvar Alterações</button>
+                            <a asp-action="Index" class="btn btn-secondary">↩️ Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5>📋 Atualizar Status</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AtualizarStatus" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <div class="mb-3">
+                            <label class="form-label">Status Atual</label>
+                            <select name="status" class="form-control" onchange="this.form.submit()">
+                                <option value="Pendente" selected="@(Model.Status == "Pendente")">⏳ Pendente</option>
+                                <option value="Em produção" selected="@(Model.Status == "Em produção")">🔨 Em produção</option>
+                                <option value="Concluído" selected="@(Model.Status == "Concluído")">✅ Concluído</option>
+                                <option value="Cancelado" selected="@(Model.Status == "Cancelado")">❌ Cancelado</option>
+                            </select>
+                        </div>
+                    </form>
+                    <hr />
+                    <p><strong>Detalhes do Bolo:</strong></p>
+                    @if (Model.Bolo != null)
+                    {
+                        <p>🍰 @Model.Bolo.Nome</p>
+                        <p>Custo: R$ @Model.Bolo.CustoIngredientes.ToString("F2")</p>
+                        <p>Lucro: R$ @(Model.Bolo.PrecoFinal - Model.Bolo.CustoIngredientes).ToString("F2")</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

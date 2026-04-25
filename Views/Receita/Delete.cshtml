@@ -1,0 +1,52 @@
+﻿@model ConfeitariaApp.Models.Receita
+
+@{
+    ViewData["Title"] = "Excluir Receita";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3>🗑️ Excluir Receita</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Atenção!</strong> Tem certeza que deseja excluir esta receita?
+                        @if (Model.Itens != null && Model.Itens.Any())
+                        {
+                            <br />
+                            <strong>Esta receita possui @(Model.Itens?.Count ?? 0) ingrediente(s) associado(s)!</strong>
+                        }
+                    </div>
+
+                    <dl class="row">
+                        <dt class="col-sm-4">ID</dt>
+                        <dd class="col-sm-8">@Model.Id</dd>
+
+                        <dt class="col-sm-4">Nome</dt>
+                        <dd class="col-sm-8">@Model.Nome</dd>
+
+                        <dt class="col-sm-4">Descrição</dt>
+                        <dd class="col-sm-8">@Model.Descricao</dd>
+
+                        <dt class="col-sm-4">Qtd. Ingredientes</dt>
+                        <dd class="col-sm-8">@(Model.Itens?.Count ?? 0)</dd>
+
+                        <dt class="col-sm-4">Custo Total</dt>
+                        <dd class="col-sm-8">R$ @Model.CalcularCustoTotal().ToString("F2")</dd>
+                    </dl>
+
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">✅ Confirmar Exclusão</button>
+                            <a asp-action="Index" class="btn btn-secondary">↩️ Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

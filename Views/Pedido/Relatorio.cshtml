@@ -1,0 +1,216 @@
+﻿@model List<ConfeitariaApp.Models.Pedido>
+
+@{
+    ViewData["Title"] = "Relatório de Pedidos";
+    var dataInicio = ViewBag.DataInicio as string;
+    var dataFim = ViewBag.DataFim as string;
+}
+
+<style>
+    :root {
+        --chocolate: #5d4037;
+        --creme: #fdf5e6;
+        --rosa-suave: #fff5f5;
+        --rosa-confeitaria: #ff85a1;
+    }
+
+    .report-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .header-report {
+        background-color: var(--chocolate);
+        color: white;
+        border-radius: 20px 20px 0 0 !important;
+    }
+
+    
+    .stat-card {
+        border: none;
+        border-radius: 15px;
+        transition: 0.3s;
+        color: white;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .bg-stats-total {
+        background-color: var(--chocolate);
+    }
+
+    .bg-stats-money {
+        background-color: #8d6e63;
+    }
+
+    .bg-stats-done {
+        background-color: var(--rosa-confeitaria);
+    }
+
+    .bg-stats-pending {
+        background-color: #a1887f;
+    }
+
+    
+    .filter-box {
+        background-color: var(--rosa-suave);
+        border-radius: 15px;
+        padding: 20px;
+        border: 1px solid #ffe0e0;
+    }
+
+    .form-control {
+        border-radius: 10px;
+    }
+
+    .btn-filter {
+        background-color: var(--chocolate);
+        color: white;
+        border-radius: 50px;
+        padding: 8px 25px;
+        border: none;
+    }
+
+        .btn-filter:hover {
+            background-color: #3e2723;
+            color: white;
+        }
+
+    .btn-clear {
+        border-radius: 50px;
+        padding: 8px 25px;
+    }
+
+    
+    .table-report thead {
+        background-color: #f8f9fa;
+        color: var(--chocolate);
+    }
+
+    .table-report th {
+        border: none;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card report-card">
+        <div class="card-header header-report py-3 text-center">
+            <h3 class="mb-0 fw-bold">📊 Relatório Analítico de Pedidos</h3>
+        </div>
+        <div class="card-body p-4">
+
+            <
+            <form method="get" class="row g-3 mb-5 filter-box align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold" style="color: var(--chocolate);">Início do Período</label>
+                    <input type="date" name="dataInicio" class="form-control" value="@dataInicio" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold" style="color: var(--chocolate);">Fim do Período</label>
+                    <input type="date" name="dataFim" class="form-control" value="@dataFim" />
+                </div>
+                <div class="col-md-4 d-flex">
+                    <button type="submit" class="btn btn-filter shadow-sm w-100 me-2">🔍 Filtrar</button>
+                    <a asp-action="Relatorio" class="btn btn-outline-secondary btn-clear">Limpar</a>
+                </div>
+            </form>
+
+            @if (Model.Any())
+            {
+                var totalPedidos = Model.Count;
+                var totalValor = Model.Sum(p => p.Valor);
+                var pedidosConcluidos = Model.Count(p => p.Status == "Concluído");
+                var valorConcluidos = Model.Where(p => p.Status == "Concluído").Sum(p => p.Valor);
+                var pedidosPendentes = Model.Count(p => p.Status == "Pendente" || p.Status == "Em produção");
+
+                
+                <div class="row mb-5 g-4 text-center">
+                    <div class="col-md-3">
+                        <div class="card stat-card bg-stats-total h-100 shadow-sm">
+                            <div class="card-body">
+                                <small class="opacity-75 uppercase">Total Pedidos</small>
+                                <h2 class="fw-bold mb-0">@totalPedidos</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card bg-stats-money h-100 shadow-sm">
+                            <div class="card-body">
+                                <small class="opacity-75">Faturamento Bruto</small>
+                                <h2 class="fw-bold mb-0">@totalValor.ToString("C2")</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card bg-stats-done h-100 shadow-sm">
+                            <div class="card-body">
+                                <small class="opacity-75">Vendas Concluídas</small>
+                                <h2 class="fw-bold mb-0">@pedidosConcluidos</h2>
+                                <div class="badge bg-white text-dark mt-1">@valorConcluidos.ToString("C2")</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card bg-stats-pending h-100 shadow-sm">
+                            <div class="card-body">
+                                <small class="opacity-75">Em Andamento</small>
+                                <h2 class="fw-bold mb-0">@pedidosPendentes</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="table-responsive">
+                    <table class="table table-hover table-report align-middle">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Produto (Bolo)</th>
+                                <th>Data Entrega</th>
+                                <th>Status</th>
+                                <th class="text-end">Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="text-muted small">#@item.Id</td>
+                                    <td class="fw-bold" style="color: var(--chocolate);">@item.Cliente</td>
+                                    <td><span class="badge bg-light text-dark border">🎂 @(item.Bolo?.Nome ?? "N/A")</span></td>
+                                    <td>@item.DataEntrega.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <span class="badge rounded-pill @(item.Status == "Concluído" ? "bg-success" : "bg-warning text-dark")">
+                                            @item.Status
+                                        </span>
+                                    </td>
+                                    <td class="text-end fw-bold">@item.Valor.ToString("C2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="fs-5" style="border-top: 2px solid var(--chocolate);">
+                                <td colspan="5" class="text-end fw-bold" style="color: var(--chocolate);">TOTAL ACUMULADO NO PERÍODO:</td>
+                                <td class="text-end fw-bold" style="color: var(--chocolate);">@totalValor.ToString("C2")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-light text-center p-5 border-dashed" style="border: 2px dashed #dee2e6; border-radius: 20px;">
+                    <span class="fs-1">🍃</span>
+                    <h5 class="text-muted mt-3">Nenhum dado encontrado para o filtro selecionado.</h5>
+                </div>
+            }
+        </div>
+    </div>
+</div>

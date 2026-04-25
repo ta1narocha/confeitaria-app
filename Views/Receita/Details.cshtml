@@ -1,0 +1,109 @@
+﻿@model ConfeitariaApp.Models.Receita
+
+@{
+    ViewData["Title"] = "Detalhes da Receita";
+}
+
+<div class="container mt-4">
+   
+    <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+        
+        <div class="card-header text-white" style="background-color: #ff85a1;">
+            <h3 class="mb-0">Detalhes da Receita: @Model.Nome</h3>
+        </div>
+
+        <div class="card-body" style="background-color: #fffafb;">
+           
+            @if (TempData["Mensagem"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+                    @TempData["Mensagem"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h5 style="color: #5d4037;" class="fw-bold border-bottom pb-2">Informações Gerais</h5>
+                    <dl class="row mt-3">
+                        <dt class="col-sm-3 text-muted">ID</dt>
+                        <dd class="col-sm-9">#@Model.Id</dd>
+
+                        <dt class="col-sm-3 text-muted">Nome</dt>
+                        <dd class="col-sm-9 fw-bold" style="color: #5d4037;">@Model.Nome</dd>
+
+                        <dt class="col-sm-3 text-muted">Descrição</dt>
+                        <dd class="col-sm-9 text-secondary">@Model.Descricao</dd>
+
+                        @if (!string.IsNullOrEmpty(Model.Rendimento))
+                        {
+                            <dt class="col-sm-3 text-muted">Rendimento</dt>
+                            <dd class="col-sm-9">@Model.Rendimento</dd>
+                        }
+
+                        <dt class="col-sm-3 text-muted">Custo Total</dt>
+                        <dd class="col-sm-9">
+                            <span class="fs-5 fw-bold" style="color: #d81b60;">R$ @Model.CalcularCustoTotal().ToString("F2")</span>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <h5 class="mt-4 fw-bold" style="color: #5d4037;">🥄 Ingredientes da Receita</h5>
+            @if (Model.Itens != null && Model.Itens.Any())
+            {
+                <div class="table-responsive mt-3">
+                    <table class="table table-hover align-middle">
+                        
+                        <thead style="background-color: #5d4037; color: white;">
+                            <tr>
+                                <th class="border-0">Ingrediente</th>
+                                <th class="border-0 text-center">Quantidade</th>
+                                <th class="border-0 text-center">Unidade</th>
+                                <th class="border-0 text-end">Preço Unit.</th>
+                                <th class="border-0 text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Itens)
+                            {
+                                <tr>
+                                    <td class="fw-bold" style="color: #5d4037;">@item.Ingrediente?.Nome</td>
+                                    <td class="text-center">@item.Quantidade.ToString("F2")</td>
+                                    <td class="text-center text-muted">@(item.Ingrediente?.UnidadeBase ?? "g")</td>
+                                    <td class="text-end text-muted">R$ @item.Ingrediente?.PrecoUnitario.ToString("F4")</td>
+                                    <td class="text-end fw-bold" style="color: #d81b60;">R$ @item.CustoItem.ToString("F2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot style="background-color: #fce4ec;">
+                            <tr>
+                                <td colspan="4" class="text-end fw-bold" style="color: #5d4037;">Custo Total da Receita:</td>
+                                <td class="text-end fw-bold" style="color: #d81b60; font-size: 1.1rem;">R$ @Model.CalcularCustoTotal().ToString("F2")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert border-0 text-center" style="background-color: #fff3f5; color: #d81b60;">
+                    ⚠️ Nenhum ingrediente adicionado a esta receita ainda.
+                </div>
+            }
+
+            
+            <div class="mt-4 d-flex flex-wrap gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-confeitaria" style="background-color: #d81b60; color: white; border-radius: 20px; padding: 8px 20px;">
+                    Editar Receita
+                </a>
+                <a asp-action="AdicionarIngrediente" asp-route-id="@Model.Id" class="btn btn-confeitaria" style="background-color: #5d4037; color: white; border-radius: 20px; padding: 8px 20px;">
+                    Adicionar Ingrediente
+                </a>
+                <a asp-action="Index" class="btn btn-outline-secondary" style="border-radius: 20px; padding: 8px 20px;">
+                    Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

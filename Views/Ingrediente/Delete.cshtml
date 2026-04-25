@@ -1,0 +1,36 @@
+﻿@model ConfeitariaApp.Models.Ingrediente
+
+@{
+    ViewData["Title"] = "Excluir Ingrediente";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-danger text-white text-center">
+                    <h3>🗑️ Excluir Ingrediente</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Atenção!</strong><br />
+                        Tem certeza que deseja excluir <strong>@Model.Nome</strong>?
+                    </div>
+
+                    <p><strong>Unidade Base:</strong> @Model.UnidadeBase</p>
+                    <p><strong>Quantidade Embalagem:</strong> @Model.QuantidadeEmbalagem</p>
+                    <p><strong>Preço:</strong> R$ @Model.PrecoEmbalagem.ToString("F2")</p>
+                    <p><strong>Preço Unitário:</strong> R$ @Model.PrecoUnitario.ToString("F4")</p>
+
+                    <form method="post" asp-action="DeleteConfirmed">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-danger flex-grow-1">Sim, excluir</button>
+                            <a asp-action="Index" class="btn btn-secondary flex-grow-1">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

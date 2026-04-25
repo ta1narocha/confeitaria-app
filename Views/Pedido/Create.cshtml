@@ -1,0 +1,151 @@
+﻿@model ConfeitariaApp.Models.Pedido
+
+@{
+    ViewData["Title"] = "Novo Pedido";
+    var bolos = ViewBag.Bolos as List<ConfeitariaApp.Models.Bolo>;
+}
+
+<style>
+    
+    .btn-confeitaria {
+        background-color: #ff85a1;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-weight: bold;
+    }
+
+        .btn-confeitaria:hover {
+            background-color: #e06b86;
+            color: white;
+        }
+
+    .card-pedido {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .header-pedido {
+        background-color: #ff85a1;
+        color: white;
+        border-radius: 20px 20px 0 0 !important;
+    }
+
+    .form-label {
+        color: #5d4037;
+        font-weight: bold;
+    }
+
+    .info-box {
+        background-color: #fdf2f4;
+        border: 1px solid #ff85a1;
+        color: #5d4037;
+        border-radius: 15px;
+    }
+
+    .form-control, .form-select {
+        border-radius: 12px;
+        border: 1px solid #dee2e6;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #ff85a1;
+            box-shadow: 0 0 0 0.25rem rgba(255, 133, 161, 0.25);
+        }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card card-pedido">
+                <div class="card-header header-pedido text-center py-3">
+                    <h3 class="mb-0">📦 Novo Pedido</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger small"></div>
+
+                        
+                        <div class="mb-3">
+                            <label asp-for="Cliente" class="form-label">Nome do Cliente</label>
+                            <input asp-for="Cliente" class="form-control" placeholder="Digite o nome completo" />
+                            <span asp-validation-for="Cliente" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row">
+                            
+                            <div class="col-md-7 mb-3">
+                                <label asp-for="BoloId" class="form-label">Bolo Escolhido</label>
+                                <select asp-for="BoloId" class="form-select" required>
+                                    <option value="">Selecione um bolo...</option>
+                                    @if (bolos != null)
+                                    {
+                                        foreach (var bolo in bolos)
+                                        {
+                                            <option value="@bolo.Id">@bolo.Nome - R$ @bolo.PrecoFinal.ToString("F2")</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="BoloId" class="text-danger small"></span>
+                            </div>
+
+                            
+                            <div class="col-md-5 mb-3">
+                                <label asp-for="DataEntrega" class="form-label">Data de Entrega</label>
+                                <input asp-for="DataEntrega" class="form-control" type="date" />
+                                <span asp-validation-for="DataEntrega" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        
+                        <div class="mb-3">
+                            <label asp-for="FormaPagamento" class="form-label">Forma de Pagamento</label>
+                            <select asp-for="FormaPagamento" class="form-select">
+                                <option value="">Selecione...</option>
+                                <option value="Pix">Pix</option>
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Cartão Crédito">Cartão Crédito</option>
+                                <option value="Cartão Débito">Cartão Débito</option>
+                            </select>
+                            <span asp-validation-for="FormaPagamento" class="text-danger small"></span>
+                        </div>
+
+                        
+                        <div class="mb-3">
+                            <label asp-for="Observacoes" class="form-label">Observações do Pedido</label>
+                            <textarea asp-for="Observacoes" class="form-control" rows="3" placeholder="Ex: Adicionar topo de bolo, retirar açúcar..."></textarea>
+                            <span asp-validation-for="Observacoes" class="text-danger small"></span>
+                        </div>
+
+                        
+                        <div class="alert info-box mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3 fs-4">📌</div>
+                                <div class="small">
+                                    Status: <strong>Pendente</strong> •
+                                    Pedido em: <strong>@DateTime.Now.ToString("dd/MM/yyyy")</strong><br />
+                                    <span class="text-muted">O preço final será calculado com base no valor do bolo.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-confeitaria btn-lg py-2 shadow-sm">
+                                💾 Salvar Pedido
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill">Voltar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

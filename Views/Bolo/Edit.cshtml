@@ -1,0 +1,154 @@
+﻿@model ConfeitariaApp.Models.Bolo
+@{
+    ViewData["Title"] = "Editar Bolo";
+    var receitas = ViewBag.Receitas as List<ConfeitariaApp.Models.Receita>;
+}
+
+<style>
+    :root {
+        --chocolate: #5d4037;
+        --rosa-confeitaria: #ff85a1;
+    }
+
+    
+    .btn-confeitaria {
+        background-color: var(--rosa-confeitaria);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-weight: bold;
+    }
+
+        .btn-confeitaria:hover {
+            background-color: #e06b86;
+            color: white;
+        }
+
+    
+    .card-confeitaria {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .header-chocolate {
+        background-color: var(--chocolate);
+        color: white;
+        border-radius: 20px 20px 0 0 !important;
+        border: none;
+    }
+
+    .form-label {
+        color: var(--chocolate);
+        font-weight: bold;
+    }
+
+   
+    .info-box {
+        background-color: #fdf2f4;
+        border: 1px solid var(--rosa-confeitaria);
+        border-radius: 15px;
+        color: var(--chocolate);
+    }
+
+    .form-control, .form-select {
+        border-radius: 50px;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row">
+    
+        <div class="col-md-8">
+            <div class="card card-confeitaria shadow-sm">
+                <div class="card-header header-chocolate py-3 text-center">
+                    <h3 class="mb-0">✏️ Editar Bolo</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger small"></div>
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="mb-3">
+                            <label asp-for="Nome" class="form-label">Nome do Bolo</label>
+                            <input asp-for="Nome" class="form-control" />
+                            <span asp-validation-for="Nome" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Descricao" class="form-label">Descrição</label>
+                            <textarea asp-for="Descricao" class="form-control" rows="3" style="border-radius: 15px;"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ReceitaId" class="form-label">Receita Base</label>
+                                <select asp-for="ReceitaId" class="form-select" required>
+                                    @if (receitas != null)
+                                    {
+                                        foreach (var r in receitas)
+                                        {
+                                            <option value="@r.Id">@r.Nome</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FatorMultiplicador" class="form-label">Fator Multiplicador</label>
+                                <input asp-for="FatorMultiplicador" class="form-control" type="number" step="0.1" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Status" class="form-label">Status do Produto</label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Ativo">Ativo</option>
+                                <option value="Inativo">Inativo</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-confeitaria btn-lg py-2 shadow-sm">💾 Atualizar Bolo</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill">Voltar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="col-md-4">
+            <div class="card card-confeitaria h-100 shadow-sm">
+                <div class="card-header header-chocolate text-center py-3">
+                    <h5 class="mb-0">📊 Resumo de Custos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="small">
+                        <p class="d-flex justify-content-between">
+                            <strong>Custo Base:</strong>
+                            <span>R$ @Model.CustoIngredientes.ToString("F2")</span>
+                        </p>
+                        <p class="d-flex justify-content-between">
+                            <strong>Fator Atual:</strong>
+                            <span>@Model.FatorMultiplicador.ToString("F2")x</span>
+                        </p>
+                        <hr />
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Custo Operacional (15%):</span>
+                            <span class="text-muted">R$ @((Model.CustoIngredientes * 0.15m).ToString("F2"))</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Margem de Lucro (50%):</span>
+                            <span class="text-muted">R$ @((Model.CustoIngredientes * 1.15m * 0.5m).ToString("F2"))</span>
+                        </div>
+                        <hr />
+                        <div class="text-center p-3 info-box">
+                            <span class="d-block mb-1 fw-bold" style="opacity: 0.8;">Preço de Venda Sugerido:</span>
+                            <span class="fs-3 fw-bold" style="color: var(--rosa-confeitaria);">R$ @Model.PrecoFinal.ToString("F2")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

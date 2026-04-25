@@ -1,0 +1,172 @@
+﻿@model List<ConfeitariaApp.Models.Pedido>
+
+@{
+    ViewData["Title"] = "Pedidos";
+}
+
+<style>
+    
+    :root {
+        --chocolate: #5d4037;
+        --creme: #fdf5e6;
+        --rosa-destaque: #ff85a1;
+    }
+
+    .page-title {
+        color: var(--chocolate);
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+
+    
+    .table-container {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border: 1px solid rgba(93, 64, 55, 0.1);
+    }
+
+    .custom-table thead {
+        background-color: var(--chocolate);
+        color: white;
+    }
+
+    .custom-table th {
+        padding: 15px !important;
+        font-weight: 500;
+        border: none;
+    }
+
+    .custom-table td {
+        padding: 12px 15px !important;
+        vertical-align: middle;
+        border-bottom: 1px solid #eee;
+    }
+
+    
+    .badge-status {
+        border-radius: 50px;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+
+    
+    .btn-create {
+        background-color: var(--chocolate);
+        color: white;
+        border-radius: 50px;
+        padding: 8px 20px;
+        border: none;
+        transition: 0.3s;
+    }
+
+        .btn-create:hover {
+            background-color: #3e2723;
+            color: white;
+            transform: scale(1.05);
+        }
+
+    .btn-relatorio {
+        background-color: transparent;
+        color: var(--chocolate);
+        border: 2px solid var(--chocolate);
+        border-radius: 50px;
+        font-weight: bold;
+    }
+
+        .btn-relatorio:hover {
+            background-color: var(--chocolate);
+            color: white;
+        }
+
+    .action-icons {
+        font-size: 1.1rem;
+        text-decoration: none;
+        margin: 0 5px;
+        transition: 0.2s;
+    }
+
+        .action-icons:hover {
+            opacity: 0.7;
+        }
+</style>
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h1 class="page-title mb-0">📦 Gestão de Pedidos</h1>
+            <p class="text-muted">Acompanhe e gerencie as encomendas da sua confeitaria</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Relatorio" class="btn btn-relatorio">📊 Relatórios</a>
+            <a asp-action="Create" class="btn btn-create shadow-sm">➕ Novo Pedido</a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center p-5 table-container">
+            <img src="https://flaticon.com" width="80" class="mb-3" style="opacity: 0.3">
+            <h4 class="text-muted">Nenhum pedido por aqui ainda.</h4>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive table-container">
+            <table class="table custom-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Bolo</th>
+                        <th class="text-center">Entrega</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-end">Valor</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var statusColor = item.Status switch
+                        {
+                            "Concluído" => "#28a745",
+                            "Em produção" => "#ffc107",
+                            "Cancelado" => "#dc3545",
+                            _ => "#6c757d"
+                        };
+
+                        <tr>
+                            <td class="fw-bold" style="color: var(--chocolate);">@item.Cliente</td>
+                            <td>
+                                <span class="badge bg-light text-dark border">
+                                    🎂 @(item.Bolo?.Nome ?? "N/A")
+                                </span>
+                            </td>
+                            <td class="text-center text-muted">@item.DataEntrega.ToString("dd/MM/yyyy")</td>
+                            <td class="text-center">
+                                <span class="badge-status" style="background-color: @statusColor; color: white;">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td class="text-end fw-bold">@item.Valor.ToString("C2")</td>
+                            <td class="text-center">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="action-icons" title="Ver Detalhes">🔍</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="action-icons" title="Editar">✏️</a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="action-icons" title="Excluir">🗑️</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+            <div class="p-3 px-4 rounded-pill" style="background-color: var(--chocolate); color: white;">
+                <span class="small opacity-75">Faturamento em Pedidos:</span>
+                <span class="fs-5 fw-bold ms-2">@Model.Sum(p => p.Valor).ToString("C2")</span>
+            </div>
+        </div>
+    }
+</div>

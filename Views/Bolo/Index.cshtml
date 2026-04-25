@@ -1,0 +1,120 @@
+﻿@model List<ConfeitariaApp.Models.Bolo>
+@{
+    ViewData["Title"] = "Cardápio de Bolos";
+}
+
+<style>
+    .card-bolo {
+        border: none;
+        border-radius: 20px;
+        transition: transform 0.2s;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+        .card-bolo:hover {
+            transform: translateY(-5px);
+        }
+
+    .header-bolo {
+        background-color: #ff85a1;
+        color: white;
+        border-radius: 20px 20px 0 0 !important;
+        border: none;
+    }
+
+    .btn-novo {
+        background-color: #ff85a1;
+        border: none;
+        border-radius: 50px;
+        padding: 10px 25px;
+        color: white;
+    }
+
+        .btn-novo:hover {
+            background-color: #e06b86;
+            color: white;
+        }
+
+    .badge-status {
+        border-radius: 50px;
+        padding: 5px 12px;
+        font-weight: 500;
+    }
+
+    .preco-final-box {
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        padding: 10px;
+        border-left: 5px solid #28a745;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fw-bold" style="color: #5d4037;">🧁 Cardápio de Bolos</h1>
+        <a asp-action="Create" class="btn btn-novo shadow-sm">➕ Novo Bolo</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card card-bolo p-5 text-center">
+            <h4 class="text-muted">Nenhum bolo cadastrado ainda...</h4>
+            <p>Que tal começar cadastrando sua primeira delícia?</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var bolo in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 card-bolo">
+                        <div class="card-header header-bolo p-3 text-center">
+                            <h5 class="mb-0 fw-bold">🎂 @bolo.Nome</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <p class="text-muted small mb-3">@bolo.Descricao</p>
+
+                            <div class="small">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Custo Ingredientes:</span>
+                                    <span>R$ @bolo.CustoIngredientes.ToString("F2")</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1 text-muted">
+                                    <span>Op. (15%):</span>
+                                    <span>R$ @((bolo.CustoIngredientes * 0.15m).ToString("F2"))</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1 text-muted">
+                                    <span>Lucro (50%):</span>
+                                    <span>R$ @((bolo.CustoIngredientes * 1.15m * 0.5m).ToString("F2"))</span>
+                                </div>
+                            </div>
+
+                            <div class="preco-final-box mt-3 d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-dark">Preço de Venda:</span>
+                                <span class="fs-4 fw-bold text-success">R$ @bolo.PrecoFinal.ToString("F2")</span>
+                            </div>
+
+                            <div class="mt-3 text-center">
+                                <span class="badge badge-status @(bolo.Status == "Ativo" ? "bg-success" : "bg-secondary")">
+                                    @bolo.Status
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 p-3">
+                            <div class="btn-group w-100 gap-2">
+                                <a asp-action="Edit" asp-route-id="@bolo.Id" class="btn btn-outline-warning rounded-pill btn-sm">Editar</a>
+                                <a asp-action="Delete" asp-route-id="@bolo.Id" class="btn btn-outline-danger rounded-pill btn-sm">Excluir</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="alert mt-4 shadow-sm border-0 d-flex align-items-center justify-content-between" style="background-color: #d1e7dd; border-radius: 15px;">
+            <span class="fs-5">💰 <strong>Faturamento Total Previsto:</strong></span>
+            <span class="fs-3 fw-bold text-success">R$ @Model.Sum(b => b.PrecoFinal).ToString("F2")</span>
+        </div>
+    }
+</div>
